@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Смайлик дня</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .floating {
+        animation: float 3s ease-in-out infinite;
+      }
+      .spinning {
+        animation: spin 8s linear infinite;
+      }
+      .heart {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0;
+        animation: fall 5s linear forwards;
+      }
+      @keyframes fall {
+        0% {
+          transform: translateY(-100px) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      .fade-in {
+        animation: fadeIn 1s ease-in;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex flex-col items-center justify-center p-4 font-sans"
+  >
+    <div
+      class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-8 text-center relative"
+    >
+      <!-- Floating decorations -->
+      <div
+        id="hearts-container"
+        class="absolute inset-0 overflow-hidden pointer-events-none"
+      ></div>
+
+      <div class="mb-8">
+        <i class="fas fa-sun text-yellow-300 text-5xl mb-4 floating"></i>
+        <h1 id="greeting" class="text-3xl font-bold text-pink-500 mb-2 fade-in">
+          Привіт, красуне!
+        </h1>
+        <p class="text-gray-600 mb-6">Як же я радий, що ти тут сьогодні 💛</p>
+
+        <div
+          id="compliment"
+          class="bg-pink-50 rounded-xl p-4 mb-6 border border-pink-200 fade-in"
+        >
+          <p class="text-pink-700 font-medium">Ти робиш світ яскравішим!</p>
+        </div>
+
+        <button
+          id="complimentBtn"
+          class="bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold py-3 px-6 rounded-full mb-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        >
+          Отримати комплімент
+        </button>
+
+        <div
+          id="quoteSection"
+          class="hidden bg-purple-50 rounded-xl p-4 mb-6 border border-purple-200 fade-in"
+        >
+          <p id="quote" class="text-purple-700 font-medium italic"></p>
+          <p id="author" class="text-purple-500 mt-2"></p>
+        </div>
+
+        <button
+          id="quoteBtn"
+          class="bg-gradient-to-r from-purple-400 to-blue-400 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        >
+          Мотиваційна цитата
+        </button>
+      </div>
+
+      <div id="imageSection" class="hidden mt-6 fade-in">
+        <img
+          id="cuteImage"
+          src=""
+          alt="Мила картинка"
+          class="rounded-xl shadow-md w-full max-h-64 object-cover"
+        />
+        <button
+          id="imageBtn"
+          class="mt-4 bg-gradient-to-r from-blue-400 to-teal-400 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        >
+          Ще картинка
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center text-gray-500 text-sm">
+      <p>Зроблено з ❤️, щоб підняти твій настрій</p>
+    </div>
+
+    <script>
+      // Greeting based on time of day
+      const greetings = [
+        "Привіт, красуне!",
+        "Радий бачити тебе!",
+        "Як же гарно, що ти тут!",
+        "Привіт, сонечко!",
+        "Ти виглядаєш чудово сьогодні!",
+      ];
+
+      const compliments = [
+        "Ти неймовірно талановита!",
+        "Твоя посмішка розвіює хмари!",
+        "Ти надихаєш оточуючих!",
+        "У тебе найкраще почуття гумору!",
+        "Ти робиш світ кращим місцем!",
+        "Твоя доброта світиться!",
+        "Ти унікальна і неповторна!",
+        "Твоя енергія заряджає!",
+        "Ти дуже розумна!",
+        "Ти прекрасна всередині і зовні!",
+      ];
+
+      const quotes = [
+        {
+          text: "Ти сильніша, ніж думаєш, і варта більшого, ніж уявляєш.",
+          author: "Незнайомець",
+        },
+        {
+          text: "Кожен новий день - це нова можливість змінити своє життя.",
+          author: "Незнайомець",
+        },
+        {
+          text: "Великі речі ніколи не виходять із зони комфорту.",
+          author: "Робін Шарма",
+        },
+        {
+          text: "Ти заслуговуєш на все найкраще у цьому світі.",
+          author: "Незнайомець",
+        },
+        {
+          text: "Найкращий спосіб передбачити майбутнє - створити його.",
+          author: "Авраам Лінкольн",
+        },
+        {
+          text: "Ти робиш прогрес, навіть якщо його не бачиш.",
+          author: "Незнайомець",
+        },
+      ];
+
+      const images = [
+        "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600",
+        "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600",
+        "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=600",
+        "https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=600",
+        "https://images.unsplash.com/photo-1494256997604-768d1f608cac?w=600",
+      ];
+
+      // Set random greeting
+      document.getElementById("greeting").textContent =
+        greetings[Math.floor(Math.random() * greetings.length)];
+
+      // Hearts animation
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = ["❤️", "💛", "💖", "💜", "💙", "🧡"][
+          Math.floor(Math.random() * 6)
+        ];
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = Math.random() * 3 + 2 + "s";
+        document.getElementById("hearts-container").appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 5000);
+      }
+
+      setInterval(createHeart, 300);
+
+      // Compliment button
+      document
+        .getElementById("complimentBtn")
+        .addEventListener("click", function () {
+          const complimentElement = document.getElementById("compliment");
+          complimentElement.querySelector("p").textContent =
+            compliments[Math.floor(Math.random() * compliments.length)];
+          complimentElement.classList.add("animate-pulse");
+
+          setTimeout(() => {
+            complimentElement.classList.remove("animate-pulse");
+          }, 1000);
+        });
+
+      // Quote button
+      document
+        .getElementById("quoteBtn")
+        .addEventListener("click", function () {
+          const quoteSection = document.getElementById("quoteSection");
+          const quoteElement = document.getElementById("quote");
+          const authorElement = document.getElementById("author");
+
+          if (quoteSection.classList.contains("hidden")) {
+            quoteSection.classList.remove("hidden");
+            document.getElementById("imageSection").classList.add("hidden");
+          }
+
+          const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+          quoteElement.textContent = randomQuote.text;
+          authorElement.textContent = `— ${randomQuote.author}`;
+
+          // Show image section after quote
+          setTimeout(() => {
+            document.getElementById("imageSection").classList.remove("hidden");
+            showRandomImage();
+          }, 1500);
+        });
+
+      // Image button
+      document
+        .getElementById("imageBtn")
+        .addEventListener("click", showRandomImage);
+
+      function showRandomImage() {
+        const imgElement = document.getElementById("cuteImage");
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+
+        imgElement.src = randomImage;
+        imgElement.alt = "Мила картинка для підняття настрою";
+
+        // Add bounce effect
+        imgElement.classList.add("animate-bounce");
+        setTimeout(() => {
+          imgElement.classList.remove("animate-bounce");
+        }, 1000);
+      }
+
+      // Initial compliment
+      setTimeout(() => {
+        document.getElementById("complimentBtn").click();
+      }, 1000);
+    </script>
+  </body>
+</html>
